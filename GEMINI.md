@@ -54,9 +54,10 @@
   - `component/`
   - `system/`
   - `resource/` : 엔진의 범용 에셋. 
-    - `image/`: 이미지가 헤더파일로 존재함. TextManager::loadTextureEmbedded로 로딩하기. 
+    - `image/`: 엔진 기본 내장이미지가 헤더파일로 존재함. TextManager::loadTextureEmbedded로 로딩하기. 
 - `out/build/`: 빌드 결과물이 저장되는 디렉터리
 - `example/`: 예제 프로젝트들. 
+  - `T.C.S`
   - `top_view_game`
   - `snake_game`
 

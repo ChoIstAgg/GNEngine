@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # GNEngine 라이브러리의 경로 (상대 경로)
-set(GNENGINE_LIB_DIR ../../out/build/custom-preset/Debug)
+
 
 # 실행 파일에 포함될 소스 파일 목록
 set(SOURCES
@@ -31,6 +31,4 @@ add_dependencies(${EXECUTABLE_NAME} GNEngine)
 # GNEngine 헤더 파일 인클루드
 target_include_directories(${EXECUTABLE_NAME} PRIVATE 
     ../../include
-    ../../lib/box2d-3.1.1/include # 필요없?
-    ../../lib/glm
 )

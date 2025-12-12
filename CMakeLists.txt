@@ -57,13 +57,30 @@ if(WIN32)
     )
     install(FILES "${OPENAL_DIR}/bin/Win64/soft_oal.dll" DESTINATION bin RENAME "OpenAL32.dll")
 elseif(UNIX)
+    # SDL 경로 설정 (Linux) - 프로젝트 내부 라이브러리 사용 가정
+    # Linux 환경에서는 .cmake 파일이 lib/SDL3-3.2.18/lib/cmake/SDL3 에 있을 것으로 가정합니다.
+    set(SDL3_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/lib/cmake/SDL3")
+    set(SDL3_image_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/lib/cmake/SDL3_image")
+    set(SDL3_ttf_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/lib/cmake/SDL3_ttf")
+    
+    # OpenAL Soft 경로 설정 (Linux) - 프로젝트 내부 라이브러리 사용 가정
+    set(OPENAL_DIR "${CMAKE_SOURCE_DIR}/lib/openal-soft-1.24.3-bin")
+
+    # CMake가 라이브러리를 찾을 경로를 지정합니다.
+    list(APPEND CMAKE_PREFIX_PATH 
+        "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/"
+        "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/"
+        "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/"
+        "${CMAKE_SOURCE_DIR}/lib/openal-soft-1.24.3-bin/"
+    )
+
     # SDL 패키지 찾기 (Linux)
-    find_package(SDL3 REQUIRED)
-    find_package(SDL3_image REQUIRED)
-    find_package(SDL3_ttf REQUIRED)
+    find_package(SDL3 CONFIG REQUIRED)
+    find_package(SDL3_image CONFIG REQUIRED)
+    find_package(SDL3_ttf CONFIG REQUIRED)
 
     # OpenAL Soft (Linux)
-    find_package(OpenAL REQUIRED)
+    find_package(OpenAL CONFIG REQUIRED)
 endif()
 
 # Box2D (Cross-platform)
