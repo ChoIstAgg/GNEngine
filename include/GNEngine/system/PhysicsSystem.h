@@ -14,6 +14,8 @@ public:
     void init();
     void update(EntityManager& entityManager, float deltaTime);
     void shutdown();
+    void onComponentAdded(const ComponentAddedEvent& event);
+    void onComponentRemoved(const ComponentRemovedEvent& event);
 
 private:
     PhysicsManager& physicsManager_;
