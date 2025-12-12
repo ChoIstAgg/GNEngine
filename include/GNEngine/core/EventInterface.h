@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 #include <SDL3/SDL.h>
 #include <string>
 #include <vector>
+#include <typeinfo>
 #include "GNEngine/core/Entity.h"
 
 /**
@@ -168,6 +169,26 @@ struct ActionEvent : public Event {
         : targetEntityId(entityId), actionName(action) {}
 };
 
+// --- ECS 관련 이벤트 ---
 
+/**
+ * @brief 엔티티에 컴포넌트가 추가될 때 발생하는 이벤트.
+ */
+struct ComponentAddedEvent : public Event {
+    EntityID entityId;
+    const std::type_info& componentType;
 
+    ComponentAddedEvent(EntityID entity, const std::type_info& type)
+        : entityId(entity), componentType(type) {}
+};
 
+/**
+ * @brief 엔티티에서 컴포넌트가 제거될 때 발생하는 이벤트.
+ */
+struct ComponentRemovedEvent : public Event {
+    EntityID entityId;
+    const std::type_info& componentType;
+
+    ComponentRemovedEvent(EntityID entity, const std::type_info& type)
+        : entityId(entity), componentType(type) {}
+};

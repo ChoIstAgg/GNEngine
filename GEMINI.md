@@ -32,7 +32,7 @@
 
 ## 3. 의존성 (Dependencies)
 
-- SDL3
+- SDL3(3.2.18)
 - SDL3_image
 - SDL3_ttf
 - OpenAL soft
@@ -42,7 +42,7 @@
 - stb_vorbis
 - nlohmann/json
 - flatBuffers
-- Box2d
+- Box2d(3.1.1)
 
 의존성 라이브러리들은 `include/lib/` 디렉터리에서 관리됩니다.
 
@@ -119,8 +119,6 @@
 - 실시간 어플리케이션인 만큼 불필요한 연산과 오버헤드를 최대한 줄이고 싶어.
 - DOD 구조를 사용중이니 캐시 친화성이 매우 중요해. 특별한 상황이 아니라면 std::vector이나 std::array, std::deque를 사용해줘. 
 
-- SDL3 공식 문서 : https://wiki.libsdl.org/wiki/index
-    SDL3는 릴리즈한지 얼마 되지 않아서 정보가 빈약해. 반드시 공식 문서를 잘 살펴보고 사용할 함수가 SDL3에 존재하는지 찾고 함수의 인자를 잘 살펴보고 사용해줘.
 - 아부는 하지 말아줘. 나는 매우 현실적인 사람이야.
 
 ## 고려해야할 사항

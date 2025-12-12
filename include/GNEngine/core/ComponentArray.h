@@ -28,7 +28,7 @@ class ComponentArray : public IComponentArray {
 public:
     void addComponent(EntityID entity, T&& component) {
         if (entityToIndexMap.count(entity)) {
-            throw std::runtime_error("Component already added to entity.");
+            throw std::runtime_error(std::format("Component already added to entity. {}", entity));
         }
         size_t newIndex = components.size();
         entityToIndexMap[entity] = newIndex;
@@ -38,7 +38,7 @@ public:
 
     void removeComponent(EntityID entity) {
         if (!entityToIndexMap.count(entity)) {
-            throw std::runtime_error("Component not found for entity.");
+            throw std::runtime_error(std::format("Component not found for entity. {}", entity));
         }
         size_t indexOfRemoved = entityToIndexMap[entity];
         size_t indexOfLast = components.size() - 1;
@@ -300,7 +300,7 @@ public:
 
     RenderComponent getComponent(EntityID entity) {
         if (!entityToIndexMap.count(entity)) {
-            throw std::runtime_error("RenderComponent not found for entity.");
+            throw std::runtime_error(std::format("RenderComponent not found for entity({}).", entity));
         }
         size_t i = entityToIndexMap.at(entity);
         return RenderComponent(sdlTextures[i], layers[i], isScreenSpace[i], hasAnimations[i], widths[i], heights[i], {srcRectX[i], srcRectY[i], srcRectW[i], srcRectH[i]}, flipX[i], flipY[i]);

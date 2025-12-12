@@ -20,7 +20,7 @@
  */
 class GNEngine_API EventManager {
 public:
-    using SubscriptionId = int;
+    using SubscriptionId = int32_t;
     using Callback = std::function<void(const std::any&)>; /* 범용 함수 타입. (void 반환형) */
 
 private:
@@ -29,7 +29,7 @@ private:
         Callback callback; /* 이벤트 발생시 실행 할 함수*/
     };
     
-    /* key= 이벤트 타입(type_index. typeid()로 사용하기.) : value= 구독자 목록(list) */
+    /* key= 이벤트의 타입(type_index. typeid()로 사용하기.) : value= 구독자 목록(list) */
     std::unordered_map<std::type_index, std::list<Subscriber>> subscribers_; 
     SubscriptionId nextId_ = 0; /* For allocation of a next subscripttion id. */
 
@@ -81,7 +81,3 @@ public:
     }
     
 };
-
-
-
-

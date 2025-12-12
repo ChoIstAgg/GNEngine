@@ -1,7 +1,7 @@
 ﻿#include "GNEngine/system/InputSystem.h"
 #include "GNEngineRootPath.h"
 #include "GNEngine/component/InputControlComponent.h"
-#include "GNEngine/core/Entity.h" // EntityId를 사용하기 위해 추가
+#include "GNEngine/core/Entity.h" 
 
 InputSystem::InputSystem(EventManager& eventManager, EntityManager& entityManager) // entityManager를 인자로 받음
     : eventManager_(eventManager)

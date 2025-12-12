@@ -6,6 +6,7 @@
 
     
     // Movement constants 임시. 삭제 예정
+    // TODO - 삭제하기. 
     #define MOVE_SPEED 100.0f
     #define ACCELERATION_RATE 1000.0f
     #define DECELERATION_RATE 1000.0f

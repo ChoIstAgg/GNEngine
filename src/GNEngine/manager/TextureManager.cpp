@@ -16,12 +16,22 @@ TextureManager::TextureManager(SDL_Renderer* renderer)
     }
 
     /* --- Load embedded images. --- */
-
     /* 이미지 오류시 대체되어 렌더링되는 이미지. */
-    std::string imageErrorImage = "__IMAGE_ERROR__";
-    if (!loadTextureEmbedded(imageErrorImage, GNEngine::resource::embedded::imageErrorImage, GNEngine::resource::embedded::imageErrorImage_len)) {
-        SDL_Log("TextureManager::init - Failed to load embedded__IMAGE_ERROR__ texture. ");
+    SDL_IOStream* io = SDL_IOFromConstMem(GNEngine::resource::embedded::imageErrorImage, GNEngine::resource::embedded::imageErrorImage_len);
+    if (io == NULL) {
+        SDL_Log("Failed to create IOStream from memory for __IMAGE_ERROR__: %s", SDL_GetError());
+        return;
     }
+
+    SDL_Texture* sdlTexture = IMG_LoadTexture_IO(renderer_, io, true);
+    if (sdlTexture == nullptr) {
+        SDL_Log("Failed to load embedded texture __IMAGE_ERROR__: %s", SDL_GetError());
+        return;
+    }
+    
+    float width_f, height_f;
+    SDL_GetTextureSize(sdlTexture, &width_f, &height_f);
+    imageErrorTexture_ = std::make_unique<Texture>(sdlTexture, static_cast<int>(width_f), static_cast<int>(height_f));
 }
 
 TextureManager::~TextureManager() {
@@ -53,7 +63,12 @@ bool TextureManager::loadTexture(const std::filesystem::path& filePath) {
         return false;
     }
 
-    textureMap_[filePath] = std::make_unique<Texture>(sdlTexture, sdlTexture->w, sdlTexture->h);
+    float width_f, height_f;
+    SDL_GetTextureSize(sdlTexture, &width_f, &height_f);
+    int width = static_cast<int>(width_f);
+    int height = static_cast<int>(height_f);
+
+    textureMap_[filePath] = std::make_unique<Texture>(sdlTexture, width, height);
     return true;
 }
 
@@ -90,7 +105,7 @@ Texture* TextureManager::getTexture(const std::filesystem::path& filePath) {
     if (!textureMap_.count(filePath)) {
         if (!loadTexture(filePath)) {
             SDL_Log("TextureManager::getTexture - Texture not found and could not be loaded: %s. Returning default texture.", filePath.string().c_str());
-            return defaultTexture_.get();
+            return imageErrorTexture_.get();
         }
     }
     return textureMap_.at(filePath).get();
@@ -103,7 +118,7 @@ Texture* TextureManager::getEmbeddedTexture(const std::string& name) {
     }
 
     SDL_Log("TextureManager::getTexture - Embedded texture not found: %s. Returning default texture.", name.c_str());
-    return defaultTexture_.get();
+    return imageErrorTexture_.get();
 }
 
 void TextureManager::setScaleModeOfTexture(const std::string& name, SDL_ScaleMode scaleMode) {

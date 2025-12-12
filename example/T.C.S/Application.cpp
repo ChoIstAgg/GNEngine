@@ -56,10 +56,10 @@ int Application::init(){
     auto& fileManager = FileManager::getInstance();
     fileManager.init(static_cast<std::filesystem::path>(APP_ROOT_PATH) / "config.bin");
 
-    windowWidth = std::stoi(fileManager.getSetting("windowWidth", "1920"));
-    windowHeight = std::stoi(fileManager.getSetting("windowHeight", "1080"));
+    windowWidth_ = std::stoi(fileManager.getSetting("windowWidth", "1920"));
+    windowHeight_ = std::stoi(fileManager.getSetting("windowHeight", "1080"));
 
-    window_ = SDL_CreateWindow("T.C.S", windowWidth, windowHeight, 0);
+    window_ = SDL_CreateWindow("T.C.S", windowWidth_, windowHeight_, 0);
     renderer_ = SDL_CreateRenderer(window_, nullptr);
     if(!window_ || !renderer_){
         SDL_Log("Error occured in SDL_CreateWindow or SDL_CreateRenderer : %s", SDL_GetError());
@@ -85,7 +85,7 @@ int Application::init(){
     sceneManager_ = std::make_unique<SceneManager>();
     renderManager_ = std::make_unique<RenderManager>(renderer_, window_);
 
-    SDL_Rect viewport = {0, 0, windowWidth, windowHeight}; //RenderManager이나 다른 클래스로 이항 예정.
+    SDL_Rect viewport = {0, 0, windowWidth_, windowHeight_}; //RenderManager이나 다른 클래스로 이항 예정.
     renderManager_->setViewport(viewport);
 
     /* --- Regist all systems --- */

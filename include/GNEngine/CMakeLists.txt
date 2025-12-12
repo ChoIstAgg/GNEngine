@@ -1,3 +1,5 @@
+# TODO 5 - GNEngine의 파일 구조를 새로 변수로 만들기. 
+
 # GNEngine 라이브러리 정의
 add_library(GNEngine SHARED
     # Include All source files.
@@ -16,6 +18,7 @@ add_library(GNEngine SHARED
     ${PROJECT_SOURCE_DIR}/src/GNEngine/manager/TextManager.cpp
     ${PROJECT_SOURCE_DIR}/src/GNEngine/manager/TextureManager.cpp
     ${PROJECT_SOURCE_DIR}/src/GNEngine/manager/FadeManager.cpp
+    ${PROJECT_SOURCE_DIR}/src/GNEngine/manager/PhysicsManager.cpp
     
     ${PROJECT_SOURCE_DIR}/src/GNEngine/system/RenderSystem.cpp
     ${PROJECT_SOURCE_DIR}/src/GNEngine/system/SoundSystem.cpp
@@ -28,6 +31,7 @@ add_library(GNEngine SHARED
     ${PROJECT_SOURCE_DIR}/src/GNEngine/system/InputToAccelerationSystem.cpp
     ${PROJECT_SOURCE_DIR}/src/GNEngine/system/PlayerAnimationControlSystem.cpp
     ${PROJECT_SOURCE_DIR}/src/GNEngine/system/AccelerationResetSystem.cpp
+    ${PROJECT_SOURCE_DIR}/src/GNEngine/system/PhysicsSystem.cpp
 
     ${PROJECT_SOURCE_DIR}/src/GNEngine/component/AnimationComponent.cpp
     ${PROJECT_SOURCE_DIR}/src/GNEngine/component/SoundComponent.cpp
@@ -37,15 +41,10 @@ add_library(GNEngine SHARED
 target_include_directories(GNEngine PUBLIC
     "${GENERATED_DIR}"
     "${PROJECT_SOURCE_DIR}/include"
-    "${SDL3_INCLUDE_DIR}"
-    "${SDL3_image_INCLUDE_DIR}"
-    "${SDL3_ttf_INCLUDE_DIR}"
-    "${OPENAL_DIR}/include"
     "${PROJECT_SOURCE_DIR}/lib"
     "${PROJECT_SOURCE_DIR}/lib/dr_libs"
     "${PROJECT_SOURCE_DIR}/lib/nlohmann"
     "${PROJECT_SOURCE_DIR}/lib/box2d-3.1.1/include"
-    
     "${PROJECT_SOURCE_DIR}/include/GNEngine/flatbuffers_generated"
     "${PROJECT_SOURCE_DIR}/src/GNEngine/component"
     "${PROJECT_SOURCE_DIR}/src/GNEngine/core"
@@ -55,12 +54,35 @@ target_include_directories(GNEngine PUBLIC
     "${PROJECT_SOURCE_DIR}/src/GNEngine/system"
 )
 
-# GNEngine 라이브러리 링크 설정
+if(WIN32)
+    target_include_directories(GNEngine PUBLIC
+        "${SDL3_INCLUDE_DIR}"
+        "${SDL3_image_INCLUDE_DIR}"
+        "${SDL3_ttf_INCLUDE_DIR}"
+        "${OPENAL_DIR}/include"
+    )
+    target_link_libraries(GNEngine PUBLIC
+        SDL3::SDL3
+        SDL3_image::SDL3_image
+        SDL3_ttf::SDL3_ttf
+        "${OPENAL_DIR}/libs/Win64/OpenAL32.lib"
+    )
+elseif(UNIX)
+    target_include_directories(GNEngine PUBLIC
+        SDL3::Headers
+        SDL3_image::Headers
+        SDL3_ttf::Headers
+        OpenAL::Headers
+    )
+    target_link_libraries(GNEngine PUBLIC
+        SDL3::SDL3
+        SDL3_image::SDL3_image
+        SDL3_ttf::SDL3_ttf
+        OpenAL::OpenAL
+    )
+endif()
+
 target_link_libraries(GNEngine PUBLIC
-    SDL3::SDL3
-    SDL3_image::SDL3_image
-    SDL3_ttf::SDL3_ttf
-    "${OPENAL_DIR}/libs/Win64/OpenAL32.lib"
     stdc++fs
     box2d
 )

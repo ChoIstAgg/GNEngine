@@ -20,7 +20,6 @@ private:
     std::unordered_map<std::filesystem::path, std::unique_ptr<Texture>> textureMap_;
 
     /* 엔진 내장 텍스처 저장소 */
-    std::unique_ptr<Texture> defaultTexture_;
     std::unique_ptr<Texture> imageErrorTexture_;
 
 public:

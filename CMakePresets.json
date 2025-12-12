@@ -11,6 +11,18 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
             }
+        },
+        {
+            "name": "linux-preset",
+            "displayName": "Linux Debug Build",
+            "description": "Configures for a debug build on Linux using Ninja",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            },
+            "condition": "$<BOOL:CMAKE_HOST_UNIX>"
         }
     ]
 }

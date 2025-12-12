@@ -9,6 +9,8 @@
 #include <queue>
 #include <optional>
 #include <typeindex>
+#include <typeinfo>
+#include <string>
 
 #include "GNEngine/core/Entity.h"
 #include "GNEngine/core/ComponentArray.h"
@@ -64,7 +66,7 @@ public:
     {
         std::type_index type = typeid(T);
         if (componentTypes_.find(type) == componentTypes_.end()) {
-            throw std::runtime_error("EntityManager: Component type not registered. Call registerComponentType<T>() first.");
+            throw std::runtime_error("EntityManager: Component type not registered. Call registerComponentType<T>() first." + std::string(type.name()));
         }
 
         auto componentArray = getComponentArray<T>();

@@ -27,8 +27,8 @@ private:
     SDL_Renderer* renderer_;
     SDL_Window* window_;
     
-    int windowWidth;
-    int windowHeight;
+    int windowWidth_;
+    int windowHeight_;
 
     bool isRunning_ = false;
 

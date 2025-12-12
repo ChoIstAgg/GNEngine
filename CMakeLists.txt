@@ -14,29 +14,59 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
 # Set the installation directory to be inside the build folder.
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
 
-# SDL 경로 설정 
-set(SDL3_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/x86_64-w64-mingw32/lib/cmake/SDL3")
-set(SDL3_DLL_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/x86_64-w64-mingw32/bin")
-set(SDL3_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/x86_64-w64-mingw32/include")
-set(SDL3_image_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/lib/cmake/SDL3_image")
-set(SDL3_image_DLL_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/bin")
-set(SDL3_image_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/include")
-set(SDL3_ttf_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/lib/cmake/SDL3_ttf")
-set(SDL3_ttf_DLL_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/bin")
-set(SDL3_ttf_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/include")
+# Platform-specific configurations
+if(WIN32)
+    # SDL 경로 설정 (Windows)
+    set(SDL3_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/x86_64-w64-mingw32/lib/cmake/SDL3")
+    set(SDL3_DLL_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/x86_64-w64-mingw32/bin")
+    set(SDL3_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3-3.2.18/x86_64-w64-mingw32/include")
+    set(SDL3_image_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/lib/cmake/SDL3_image")
+    set(SDL3_image_DLL_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/bin")
+    set(SDL3_image_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/include")
+    set(SDL3_ttf_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/lib/cmake/SDL3_ttf")
+    set(SDL3_ttf_DLL_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/bin")
+    set(SDL3_ttf_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/include")
 
-# OpenAL Soft 경로 설정
-set(OPENAL_DIR "${CMAKE_SOURCE_DIR}/lib/openal-soft-1.24.3-bin")
+    # OpenAL Soft 경로 설정 (Windows)
+    set(OPENAL_DIR "${CMAKE_SOURCE_DIR}/lib/openal-soft-1.24.3-bin")
 
-# MinGW 런타임 경로 설정
-set(MINGW_BIN_DIR "C:/Development_Environment/code/MSYS2/ucrt64/bin")
+    # MinGW 런타임 경로 설정 (Windows)
+    set(MINGW_BIN_DIR "C:/Development_Environment/code/MSYS2/ucrt64/bin")
 
-# SDL 패키지 찾기
-find_package(SDL3 CONFIG REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
-find_package(SDL3_ttf CONFIG REQUIRED)
+    # SDL 패키지 찾기 (Windows)
+    find_package(SDL3 CONFIG REQUIRED)
+    find_package(SDL3_image CONFIG REQUIRED)
+    find_package(SDL3_ttf CONFIG REQUIRED)
 
-# Box2D
+    # Copy dependency DLLs to the runtime output directory for development builds.
+    file(COPY
+        "${SDL3_DLL_DIR}/SDL3.dll"
+        "${SDL3_image_DLL_DIR}/SDL3_image.dll"
+        "${SDL3_ttf_DLL_DIR}/SDL3_ttf.dll"
+        DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug"
+    )
+    file(COPY "${OPENAL_DIR}/bin/Win64/soft_oal.dll" DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug")
+    file(RENAME "${CMAKE_BINARY_DIR}/bin/Debug/soft_oal.dll" "${CMAKE_BINARY_DIR}/bin/Debug/OpenAL32.dll")
+
+    # Install dependency DLLs.
+    install(FILES
+        "${SDL3_DLL_DIR}/SDL3.dll"
+        "${SDL3_image_DLL_DIR}/SDL3_image.dll"
+        "${SDL3_ttf_DLL_DIR}/SDL3_ttf.dll"
+        DESTINATION bin
+    )
+    install(FILES "${OPENAL_DIR}/bin/Win64/soft_oal.dll" DESTINATION bin RENAME "OpenAL32.dll")
+elseif(UNIX)
+    # SDL 패키지 찾기 (Linux)
+    find_package(SDL3 REQUIRED)
+    find_package(SDL3_image REQUIRED)
+    find_package(SDL3_ttf REQUIRED)
+
+    # OpenAL Soft (Linux)
+    find_package(OpenAL REQUIRED)
+endif()
+
+# Box2D (Cross-platform)
 add_subdirectory(lib/box2d-3.1.1)
 
 # Create a directory for generated files to keep the build directory clean.
@@ -54,22 +84,3 @@ add_subdirectory(include)
 
 # Add the example project
 add_subdirectory(example)
-
-# Copy dependency DLLs to the runtime output directory for development builds.
-file(COPY
-    "${SDL3_DLL_DIR}/SDL3.dll"
-    "${SDL3_image_DLL_DIR}/SDL3_image.dll"
-    "${SDL3_ttf_DLL_DIR}/SDL3_ttf.dll"
-    DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug"
-)
-file(COPY "${OPENAL_DIR}/bin/Win64/soft_oal.dll" DESTINATION "${CMAKE_BINARY_DIR}/bin/Debug")
-file(RENAME "${CMAKE_BINARY_DIR}/bin/Debug/soft_oal.dll" "${CMAKE_BINARY_DIR}/bin/Debug/OpenAL32.dll")
-
-# Install dependency DLLs.
-install(FILES
-    "${SDL3_DLL_DIR}/SDL3.dll"
-    "${SDL3_image_DLL_DIR}/SDL3_image.dll"
-    "${SDL3_ttf_DLL_DIR}/SDL3_ttf.dll"
-    DESTINATION bin
-)
-install(FILES "${OPENAL_DIR}/bin/Win64/soft_oal.dll" DESTINATION bin RENAME "OpenAL32.dll")

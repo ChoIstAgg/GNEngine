@@ -4,16 +4,16 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/include/lib/SDL3-3.2.18/x86_64-w64-mingw32/include/SDL3",
-                "${workspaceFolder}/include/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/include/SDL3_image",
-                "${workspaceFolder}/include/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/include/SDL3_ttf"
+                "${workspaceFolder}/lib/SDL3-3.2.18/x86_64-w64-mingw32/include/SDL3",
+                "${workspaceFolder}/lib/SDL3_image-3.2.4/x86_64-w64-mingw32/include/SDL3_image",
+                "${workspaceFolder}/lib/SDL3_ttf-3.2.2/x86_64-w64-mingw32/include/SDL3_ttf"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:\\Development_Environment\\code\\MSYS2\\ucrt64\\bin\\g++.exe",
+            "compilerPath": "C:\\Development_Environment\\code\\msys64\\ucrt64\\bin\\g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++23",
             "intelliSenseMode": "windows-gcc-x64",
