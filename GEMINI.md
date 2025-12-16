@@ -1,5 +1,8 @@
 # GNEngine Project Configuration for Gemini
 
+Please answer in Korean.
+I'm studying English. so i will quest in English. 
+
 ## 1. 프로젝트 개요 (Project Overview)
 
 - **프로젝트명:** GNEngine

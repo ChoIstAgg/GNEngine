@@ -71,7 +71,7 @@ public:
      * @brief 
     */
     // void createBody(const ComponentAddedEvent& event);
-    void destroyBoey(const ComponentRemovedEvent& event);
+    // void destroyBoey(const ComponentRemovedEvent& event);
 
 private:
     b2Vec2 gravity_ = {0.0f, 0.0f}; /* 물리 세계의 중력 벡터. */

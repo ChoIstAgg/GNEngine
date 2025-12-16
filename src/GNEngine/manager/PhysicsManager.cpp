@@ -24,6 +24,6 @@ void PhysicsManager::shutdownPhysics() {
     }
 }
 
-void PhysicsManager::destroyBody(ComponentRemovedEvent& event) {
-    if(event == )
-}
+// void PhysicsManager::destroyBody(ComponentRemovedEvent& event) {
+//     if(event == )
+// }
