@@ -31,7 +31,7 @@ public:
     * @param animationManager
     * @return 생성된 플레이어의 EntityId
     */
-    static EntityID create(
+    static EntityId create(
         EntityManager& entityManager, 
         EventManager& eventManager, 
         TextureManager& textureManager, 

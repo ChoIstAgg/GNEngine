@@ -52,8 +52,8 @@ public:
     
 
 private:
-std::vector<EntityID> sceneEntityIDs_;
-    EntityID logoEntity_;
+std::vector<EntityId> sceneEntityIDs_;
+    EntityId logoEntity_;
 
     float sceneTimer_ = 0.0f; /* 페이드인이 끝난 직후부터 시간을 기록함. */
 

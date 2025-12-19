@@ -19,14 +19,14 @@
 class IComponentArray {
 public:
     virtual ~IComponentArray() = default;
-    virtual void entityDestroyed(EntityID entity) = 0;
-    virtual bool hasComponent(EntityID entity) const = 0;
+    virtual void entityDestroyed(EntityId entity) = 0;
+    virtual bool hasComponent(EntityId entity) const = 0;
 };
 
 template<typename T>
 class ComponentArray : public IComponentArray {
 public:
-    void addComponent(EntityID entity, T&& component) {
+    void addComponent(EntityId entity, T&& component) {
         if (entityToIndexMap.count(entity)) {
             throw std::runtime_error(std::format("Component already added to entity. {}", entity));
         }
@@ -36,7 +36,7 @@ public:
         components.push_back(std::move(component));
     }
 
-    void removeComponent(EntityID entity) {
+    void removeComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error(std::format("Component not found for entity. {}", entity));
         }
@@ -44,7 +44,7 @@ public:
         size_t indexOfLast = components.size() - 1;
         components[indexOfRemoved] = std::move(components[indexOfLast]);
         
-        EntityID entityOfLast = indexToEntityMap[indexOfLast];
+        EntityId entityOfLast = indexToEntityMap[indexOfLast];
         entityToIndexMap[entityOfLast] = indexOfRemoved;
         indexToEntityMap[indexOfRemoved] = entityOfLast;
 
@@ -53,18 +53,18 @@ public:
         indexToEntityMap.erase(indexOfLast);
     }
 
-    T& getComponent(EntityID entity) {
+    T& getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("Component not found for entity.");
         }
         return components[entityToIndexMap.at(entity)];
     }
 
-    bool hasComponent(EntityID entity) const override {
+    bool hasComponent(EntityId entity) const override {
         return entityToIndexMap.count(entity);
     }
 
-    void entityDestroyed(EntityID entity) override {
+    void entityDestroyed(EntityId entity) override {
         if (entityToIndexMap.count(entity)) {
             removeComponent(entity);
         }
@@ -72,34 +72,33 @@ public:
 
 protected:
     std::vector<T> components;
-    std::unordered_map<EntityID, size_t> entityToIndexMap;
-    std::unordered_map<size_t, EntityID> indexToEntityMap;
+    std::unordered_map<EntityId, size_t> entityToIndexMap;
+    std::unordered_map<size_t, EntityId> indexToEntityMap;
 };
 
 class GNEngine_API SoAComponentArray : public IComponentArray {
 public:
-    void entityDestroyed(EntityID entity) override;
+    void entityDestroyed(EntityId entity) override;
 
-    bool hasComponent(EntityID entity) const override {
+    bool hasComponent(EntityId entity) const override {
         return entityToIndexMap.count(entity);
     }
 
-    const std::unordered_map<EntityID, size_t>& getEntityToIndexMap() const {
+    const std::unordered_map<EntityId, size_t>& getEntityToIndexMap() const {
         return entityToIndexMap;
     }
 
 protected:
     virtual void swapAndPop(size_t indexOfRemoved, size_t indexOfLast) = 0;
 
-    std::unordered_map<EntityID, size_t> entityToIndexMap;
-    std::unordered_map<size_t, EntityID> indexToEntityMap;
+    std::unordered_map<EntityId, size_t> entityToIndexMap;
+    std::unordered_map<size_t, EntityId> indexToEntityMap;
 };
-
 
 template<>
 class ComponentArray<TransformComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, TransformComponent&& component) {
+    void addComponent(EntityId entity, TransformComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -122,12 +121,28 @@ public:
         positionY[index] = component.positionY_;
         scaleX[index] = component.scaleX_;
         scaleY[index] = component.scaleY_;
-        rotatedAngle[index] = component.rotatedAngle_;
+        rotatedAngle[index] = component.angle_;
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
+    void removeComponent(EntityId entity) {
+        if (!entityToIndexMap.count(entity)) {
+            //throw std::runtime_error(std::format("Component not found for entity. {}", entity));
+            return; // 예외 대신 반환하여 처리하지 않음.
+        }
+        size_t indexOfRemoved = entityToIndexMap[entity];
+        size_t indexOfLast = indexToEntityMap.size() - 1;
 
-    TransformComponent getComponent(EntityID entity) {
+        swapAndPop(indexOfRemoved, indexOfLast);
+        
+        EntityId entityOfLast = indexToEntityMap[indexOfLast];
+        entityToIndexMap[entityOfLast] = indexOfRemoved;
+        indexToEntityMap[indexOfRemoved] = entityOfLast;
+
+        entityToIndexMap.erase(entity);
+        indexToEntityMap.erase(indexOfLast);
+    }
+
+    TransformComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("TransformComponent not found for entity.");
         }
@@ -140,6 +155,9 @@ public:
             rotatedAngle[index]
         };
     }
+
+    // T& getComponent(EntityId entity) { /* For systems that need to directly modify SoA data */}
+    // 이 메서드는 SoA의 각 벡터에 대한 참조를 반환하도록 변경해야 할 수도 있습니다.
 
     std::vector<float> positionX;
     std::vector<float> positionY;
@@ -166,7 +184,7 @@ protected:
 template<>
 class ComponentArray<VelocityComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, VelocityComponent&& component) {
+    void addComponent(EntityId entity, VelocityComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -185,9 +203,9 @@ public:
         vy[index] = component.vy;
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
+    void removeComponent(EntityId entity) { /* Stub */ }
 
-    VelocityComponent getComponent(EntityID entity) {
+    VelocityComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("VelocityComponent not found for entity.");
         }
@@ -210,7 +228,7 @@ protected:
 template<>
 class ComponentArray<AccelerationComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, AccelerationComponent&& component) {
+    void addComponent(EntityId entity, AccelerationComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -229,9 +247,9 @@ public:
         ay[index] = component.ay;
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
+    void removeComponent(EntityId entity) { /* Stub */ }
 
-    AccelerationComponent getComponent(EntityID entity) {
+    AccelerationComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("AccelerationComponent not found for entity.");
         }
@@ -255,7 +273,7 @@ protected:
 template<>
 class ComponentArray<RenderComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, RenderComponent&& component) {
+    void addComponent(EntityId entity, RenderComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -296,9 +314,8 @@ public:
         flipY[index] = component.getFlipY();
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
-
-    RenderComponent getComponent(EntityID entity) {
+    void removeComponent(EntityId entity) { /* Stub */ }
+    RenderComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error(std::format("RenderComponent not found for entity({}).", entity));
         }
@@ -306,7 +323,7 @@ public:
         return RenderComponent(sdlTextures[i], layers[i], isScreenSpace[i], hasAnimations[i], widths[i], heights[i], {srcRectX[i], srcRectY[i], srcRectW[i], srcRectH[i]}, flipX[i], flipY[i]);
     }
 
-    void updateTexture(EntityID entity, SDL_Texture* texture, int width, int height) {
+    void updateTexture(EntityId entity, SDL_Texture* texture, int width, int height) {
         if (!entityToIndexMap.count(entity)) {
             return; // Or throw an exception
         }
@@ -371,7 +388,7 @@ protected:
 template<>
 class ComponentArray<AnimationComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, AnimationComponent&& component) {
+    void addComponent(EntityId entity, AnimationComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -397,9 +414,9 @@ public:
         areFinished[index] = component.isFinished_;
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
+    void removeComponent(EntityId entity) { /* Stub */ }
 
-    AnimationComponent getComponent(EntityID entity) {
+    AnimationComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("AnimationComponent not found for entity.");
         }
@@ -437,7 +454,7 @@ protected:
 template<>
 class ComponentArray<TextComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, TextComponent&& component) {
+    void addComponent(EntityId entity, TextComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -471,9 +488,9 @@ public:
         layers[index] = component.layer;
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
+    void removeComponent(EntityId entity) { /* Stub */ }
 
-    TextComponent getComponent(EntityID entity) {
+    TextComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("TextComponent not found for entity.");
         }
@@ -483,7 +500,7 @@ public:
         return comp;
     }
 
-    void setDirty(EntityID entity, bool isDirty) {
+    void setDirty(EntityId entity, bool isDirty) {
         if (!entityToIndexMap.count(entity)) {
             return; // Or throw an exception
         }
@@ -525,7 +542,7 @@ protected:
 template<>
 class ComponentArray<CameraComponent> : public SoAComponentArray {
 public:
-    void addComponent(EntityID entity, CameraComponent&& component) {
+    void addComponent(EntityId entity, CameraComponent&& component) {
         size_t index;
         auto it = entityToIndexMap.find(entity);
         if (it == entityToIndexMap.end()) {
@@ -549,9 +566,9 @@ public:
         targetEntityIds[index] = component.targetEntityId;
     }
 
-    void removeComponent(EntityID entity) { /* Stub */ }
+    void removeComponent(EntityId entity) { /* Stub */ }
 
-    CameraComponent getComponent(EntityID entity) {
+    CameraComponent getComponent(EntityId entity) {
         if (!entityToIndexMap.count(entity)) {
             throw std::runtime_error("CameraComponent not found for entity.");
         }
@@ -562,7 +579,7 @@ public:
     std::vector<float> x;
     std::vector<float> y;
     std::vector<float> zoom;
-    std::vector<EntityID> targetEntityIds;
+    std::vector<EntityId> targetEntityIds;
 
 protected:
     void swapAndPop(size_t indexOfRemoved, size_t indexOfLast) override {

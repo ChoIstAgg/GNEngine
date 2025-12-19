@@ -1,4 +1,5 @@
 ﻿#include "GNEngine/manager/SoundManager.h"
+#include "GNEngine/core/Sound.h"
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
@@ -130,7 +131,7 @@ std::shared_ptr<Sound> SoundManager::getSound(const std::filesystem::path& fileP
     return nullptr;
 }
 
-ALuint SoundManager::playSound(EntityID entityId, Sound* sound, Position position, SoundPriority priority, float volume, float pitch, bool loop, bool spatialized) {
+ALuint SoundManager::playSound(EntityId entityId, Sound* sound, Position position, SoundPriority priority, float volume, float pitch, bool loop, bool spatialized) {
     if (!sound) return 0;
 
     auto voiceIndexOpt = findAvailableVoice(priority);

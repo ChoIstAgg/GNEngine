@@ -47,7 +47,7 @@ void SoundSystem::update(EntityManager& entityManager, float deltaTime) {
 
     for (size_t i = 0; i < soundManager_.getVoiceCount(); ++i) {
         if (arePlaying[i]) {
-            EntityID ownerId = ownerEntityIds[i];
+            EntityId ownerId = ownerEntityIds[i];
             if (ownerId == 0) continue; // 주인이 없는 소스는 스킵
 
             // 위치 동기화

@@ -27,8 +27,8 @@
 * @brief 플레이어 엔티티를 생성하고 필요한 모든 컴포넌트를 추가함.
 * @return 생성된 플레이어의 EntityId
 */
-EntityID PlayerPrefab::create(EntityManager& entityManager, EventManager& eventManager, TextureManager& textureManager, RenderManager& renderManager, SoundManager& soundManager, AnimationManager& animationManager) {
-    EntityID entityId = entityManager.createEntity();
+EntityId PlayerPrefab::create(EntityManager& entityManager, EventManager& eventManager, TextureManager& textureManager, RenderManager& renderManager, SoundManager& soundManager, AnimationManager& animationManager) {
+    EntityId entityId = entityManager.createEntity();
 
     // 엔티티 생성 및 컴포넌트 추가
     entityManager.addComponent<TransformComponent>(entityId, 0.0f, 0.0f);

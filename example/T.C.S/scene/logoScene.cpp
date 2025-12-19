@@ -94,7 +94,7 @@ void LogoScene::onEnter() {
 void LogoScene::onExit() {
     std::cerr << "LogoScene::onExit()\n";
 
-    for (EntityID entity : sceneEntityIDs_) {
+    for (EntityId entity : sceneEntityIDs_) {
         entityManager_.destroyEntity(entity);
     }
     sceneEntityIDs_.clear();

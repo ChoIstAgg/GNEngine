@@ -1,142 +1,137 @@
 #include "GNEngine/system/PhysicsSystem.h"
 #include "GNEngine/component/RigidBodyComponent.h"
 #include "GNEngine/component/TransformComponent.h"
+#include <iostream>
 
 PhysicsSystem::PhysicsSystem(EntityManager& entityManager, PhysicsManager& physicsManager, EventManager& eventManager)
     : entityManager_(entityManager), physicsManager_(physicsManager), eventManager_(eventManager) {}
 
 PhysicsSystem::~PhysicsSystem() {
+    shutdown();
 }
 
 void PhysicsSystem::init() {
-    std::cerr << "PhysicsSystem initialized.\n";
-
-    b2WorldId worldId = physicsManager_.getWorldId();
-    if (!b2World_IsValid(worldId)) {
-        std::cerr << "PhysicsSystem::init - Invalid physics world ID from PhysicsManager.\n";
-        return;
-    }
-
-    // 기존 엔티티에 대한 b2Body 생성 로직은 onComponentAdded 이벤트 핸들러로 이동
-    // init 시점에 이미 존재하는 RigidBodyComponent에 대해 b2Body를 생성합니다.
-    for (auto entity : entityManager_.getEntitiesWith<RigidBodyComponent, TransformComponent>()) {
-        ComponentAddedEvent event(entity, typeid(RigidBodyComponent));
-        onComponentAdded(event);
-    }
-
+    // Subscribe to events
     componentAddedSubId_ = eventManager_.subscribe<ComponentAddedEvent>(
         std::bind(&PhysicsSystem::onComponentAdded, this, std::placeholders::_1)
     );
     componentRemovedSubId_ = eventManager_.subscribe<ComponentRemovedEvent>(
         std::bind(&PhysicsSystem::onComponentRemoved, this, std::placeholders::_1)
     );
+
+    // Initialize existing bodies
+    for (auto entity : entityManager_.getEntitiesWith<RigidBodyComponent, TransformComponent>()) {
+        ComponentAddedEvent event(entity, typeid(RigidBodyComponent));
+        onComponentAdded(event);
+    }
 }
 
 void PhysicsSystem::update(EntityManager& entityManager, float deltaTime) {
-    b2WorldId worldId = physicsManager_.getWorldId();
-    if (!b2World_IsValid(worldId)) return;
+    // 1. Step the physics world
+    // Using a fixed time step is recommended for physics stability.
+    // For now, we use deltaTime but capped or fixed step in Manager is better.
+    // PhysicsManager::step takes (timeStep, subStepCount)
+    physicsManager_.step(deltaTime, 4); 
 
-    b2World_Step(worldId, physicsManager_.getTimeStep(), 8); // Corrected argument count
-
-    // RigidBodyComponent 업데이트 
+    // 2. Sync Box2D simulation results back to Components
     for (auto entity : entityManager_.getEntitiesWith<RigidBodyComponent, TransformComponent>()) {
-        auto rigidBodyRef = entityManager_.getComponent<RigidBodyComponent>(entity);
-        if (!rigidBodyRef.has_value()) continue; // Should not happen if getEntitiesWith is correct
-        auto& rigidBody = rigidBodyRef;
+        auto rbOpt = entityManager.getComponent<RigidBodyComponent>(entity);
+        auto trOpt = entityManager.getComponent<TransformComponent>(entity);
 
-        if (rigidBody.value().bodyType == b2_dynamicBody) {
-            auto transformRef = entityManager_.getComponent<TransformComponent>(entity);
-            if (!transformRef.has_value()) continue; // Should not happen
-            auto& transform = transformRef;
+        if (!rbOpt || !trOpt) continue;
 
-            b2Vec2 position = b2Body_GetPosition(rigidBody.value().runtimeBody);
-            b2Rot rotation = b2Body_GetRotation(rigidBody.value().runtimeBody);
-            transform.value().positionX_ = position.x * physicsManager_.getPixelsPerMeter();
-            transform.value().positionY_ = position.y * physicsManager_.getPixelsPerMeter();
-            transform.value().rotatedAngle_ = atan2f(rotation.s, rotation.c);
+        RigidBodyComponent& rb = rbOpt.value();
+        TransformComponent& tr = trOpt.value();
+
+        if (b2Body_IsValid(rb.bodyId)) {
+            // Update RigidBodyComponent data from Box2D
+            physicsManager_.updateRigidBodyComponent(rb);
+
+            // Update TransformComponent from RigidBodyComponent (which now holds fresh Box2D data)
+            // Convert Meters (Box2D) -> Pixels (Game World)
+            b2Vec2 posMeters = rb.position;
+            b2Vec2 posPixels = physicsManager_.toPixels(posMeters);
+            
+            tr.positionX_ = posPixels.x;
+            tr.positionY_ = posPixels.y;
+            tr.angle_ = rb.angle; // Box2D angle is radians, Transform might need conversion if it expects degrees? 
+                                  // Assuming Transform uses Radians as per common std. If Degrees, need conversion.
+                                  // Looking at previous code, it used atan2, implying radians.
         }
     }
 }
 
 void PhysicsSystem::shutdown() {
-    std::cerr << "PhysicsSystem shutdown.\n";
-
     eventManager_.unsubscribe(typeid(ComponentAddedEvent), componentAddedSubId_);
     eventManager_.unsubscribe(typeid(ComponentRemovedEvent), componentRemovedSubId_);
 
-    b2WorldId worldId = physicsManager_.getWorldId();
-    if (!b2World_IsValid(worldId)) {
-        std::cerr << "PhysicsSystem::shutdown - Invalid physics world ID from PhysicsManager.\n";
-        return;
-    }
-
+    // Destroy all bodies managed by this system
     for (auto entity : entityManager_.getEntitiesWith<RigidBodyComponent>()) {
-        auto rigidBodyOpt = entityManager_.getComponent<RigidBodyComponent>(entity);
-        if (!rigidBodyOpt.has_value()) continue; // Should not happen
-
-        auto& rigidBody = rigidBodyOpt.value();
-
-        if (b2Body_IsValid(rigidBody.runtimeBody)) { /* Destroy successfully. */
-            b2DestroyBody(rigidBody.runtimeBody);
-            rigidBody.runtimeBody = b2_nullBodyId;
+        auto rbOpt = entityManager_.getComponent<RigidBodyComponent>(entity);
+        if (rbOpt) {
+            physicsManager_.destroyBody(rbOpt.value().bodyId);
+            rbOpt.value().bodyId = b2_nullBodyId;
         }
     }
 }
 
 void PhysicsSystem::onComponentAdded(const ComponentAddedEvent& event) {
-    if (event.componentType == typeid(RigidBodyComponent)) {
-        EntityID entity = event.entityId;
-        auto rigidBodyRef = entityManager_.getComponent<RigidBodyComponent>(entity);
-        auto transformRef = entityManager_.getComponent<TransformComponent>(entity);
+    if (event.componentType != typeid(RigidBodyComponent)) return;
 
-        if (!rigidBodyRef.has_value() || !transformRef.has_value()) {
-            std::cerr << "PhysicsSystem::onComponentAdded - Entity " << entity << " missing RigidBodyComponent or TransformComponent.\n";
-            return;
-        }
+    EntityId entity = event.entityId;
+    auto rbOpt = entityManager_.getComponent<RigidBodyComponent>(entity);
+    auto trOpt = entityManager_.getComponent<TransformComponent>(entity);
 
-        auto& rigidBody = rigidBodyRef.value(); 
-        auto& transform = transformRef.value(); 
+    if (!rbOpt || !trOpt) { return; }
 
-        b2WorldId worldId = physicsManager_.getWorldId();
-        if (!b2World_IsValid(worldId)) {
-            std::cerr << "PhysicsSystem::onComponentAdded - Invalid physics world ID from PhysicsManager.\n";
-            return;
-        }
+    RigidBodyComponent& rb = rbOpt.value();
+    TransformComponent& tr = trOpt.value();
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = rigidBody.bodyType;
-        bodyDef.position = b2Vec2(transform.positionX_ / physicsManager_.getPixelsPerMeter(), transform.positionY_ / physicsManager_.getPixelsPerMeter());
-        bodyDef.rotation = b2Rot(transform.rotatedAngle_);
-        bodyDef.fixedRotation = rigidBody.isFixedRotation;
+    if (b2Body_IsValid(rb.bodyId)) { return; }// Already exists
 
-        b2BodyId bodyId = b2CreateBody(worldId, &bodyDef);
-        rigidBody.runtimeBody = bodyId;
+    // Create Body Definition
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.type = rb.bodyType;
+    
+    // Convert Pixels -> Meters
+    b2Vec2 posPixels = {tr.positionX_, tr.positionY_};
+    bodyDef.position = physicsManager_.toMeters(posPixels);
+    bodyDef.rotation = b2MakeRot(tr.angle_);
+    bodyDef.fixedRotation = rb.isFixedRotation;
+    bodyDef.linearVelocity = rb.linearVelocity;
+    bodyDef.angularVelocity = rb.angularVelocity;
+    bodyDef.gravityScale = rb.gravityScale;
+    bodyDef.enableSleep = rb.allowSleep;
+    bodyDef.isAwake = rb.isAwake;
+    bodyDef.isEnabled = rb.isEnabled;
 
-        b2Polygon box = b2MakeBox(rigidBody.size.x / 2.0f / physicsManager_.getPixelsPerMeter(), rigidBody.size.y / 2.0f / physicsManager_.getPixelsPerMeter());
+    // Create Body
+    rb.bodyId = physicsManager_.createBody(bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = rigidBody.density;
+    // Create Shape (Box for now)
+    // TODO: Support other shapes via ShapeComponent or similar
+    b2Polygon box = b2MakeBox(
+        physicsManager_.toMeters(rb.size.x) * 0.5f, 
+        physicsManager_.toMeters(rb.size.y) * 0.5f
+    );
 
-        b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
-        b2Shape_SetFriction(shapeId, rigidBody.friction);
-        b2Shape_SetRestitution(shapeId, rigidBody.restitution);
-    }
+    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    shapeDef.density = rb.density;
+    
+    b2ShapeId shapeId = physicsManager_.createPolygonShape(rb.bodyId, shapeDef, box);
+    
+    // Set material properties after creation
+    b2Shape_SetFriction(shapeId, rb.friction);
+    b2Shape_SetRestitution(shapeId, rb.restitution);
 }
 
 void PhysicsSystem::onComponentRemoved(const ComponentRemovedEvent& event) {
-    if (event.componentType == typeid(RigidBodyComponent)) {
-        EntityID entity = event.entityId;
-        auto rigidBodyRef = entityManager_.getComponent<RigidBodyComponent>(entity);
+    if (event.componentType != typeid(RigidBodyComponent)) return;
 
-        if (!rigidBodyRef.has_value()) {
-            std::cerr << "PhysicsSystem::onComponentRemoved - Entity " << entity << " missing RigidBodyComponent.\n";
-            return;
-        }
-        auto& rigidBody = rigidBodyRef.value();
-
-        if (b2Body_IsValid(rigidBody.runtimeBody)) {
-            b2DestroyBody(rigidBody.runtimeBody);
-            rigidBody.runtimeBody = b2_nullBodyId;
-        }
+    EntityId entity = event.entityId;
+    auto rbOpt = entityManager_.getComponent<RigidBodyComponent>(entity);
+    if (rbOpt && b2Body_IsValid(rbOpt.value().bodyId)) {
+        physicsManager_.destroyBody(rbOpt.value().bodyId);
+        rbOpt.value().bodyId = b2_nullBodyId;
     }
 }

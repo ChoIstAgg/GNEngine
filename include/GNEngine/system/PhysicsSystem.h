@@ -1,5 +1,6 @@
 #pragma once
 #include "GNEngine/GNEngine_API.h"
+
 #include "GNEngine/manager/PhysicsManager.h"
 #include "GNEngine/manager/EntityManager.h"
 #include "GNEngine/manager/EventManager.h"
@@ -14,10 +15,11 @@ public:
     void init();
     void update(EntityManager& entityManager, float deltaTime);
     void shutdown();
+    
+private:
     void onComponentAdded(const ComponentAddedEvent& event);
     void onComponentRemoved(const ComponentRemovedEvent& event);
 
-private:
     PhysicsManager& physicsManager_;
     EntityManager& entityManager_;
     EventManager& eventManager_;

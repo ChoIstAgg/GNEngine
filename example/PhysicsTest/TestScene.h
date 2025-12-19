@@ -12,11 +12,11 @@ public:
     void onExit() override;
 
 private:
-    EntityID box1;
-    EntityID box2;
-    EntityID box3;
-    EntityID box4;
-    EntityID box5;
+    EntityId box1;
+    EntityId box2;
+    EntityId box3;
+    EntityId box4;
+    EntityId box5;
 
     EntityManager& entityManager_;
     TextureManager& textureManager_;

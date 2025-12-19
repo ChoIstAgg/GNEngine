@@ -53,6 +53,3 @@ private:
     EntityManager& entityManager_;
     std::map<SystemPhase, std::vector<std::function<void(float)>>> systems_;
 };
-
-
-

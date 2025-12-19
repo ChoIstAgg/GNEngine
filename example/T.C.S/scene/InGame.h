@@ -41,9 +41,9 @@ private:
     TextManager& textManager_;
     AnimationManager& animationManager_;
 
-    std::vector<EntityID> sceneEntityIDs_;
-    EntityID playerEntity_;
-    EntityID cameraEntity_;
+    std::vector<EntityId> sceneEntityIDs_;
+    EntityId playerEntity_;
+    EntityId cameraEntity_;
 };
 
 

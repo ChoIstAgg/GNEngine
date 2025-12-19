@@ -7,7 +7,7 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3_image/SDL_image.h>
 
-#include "GNEngine/resource/embedded/image/ImageError.h"
+#include "GNEngine/resource/image/ImageError.h"
 
 TextureManager::TextureManager(SDL_Renderer* renderer)
     : renderer_(renderer) {

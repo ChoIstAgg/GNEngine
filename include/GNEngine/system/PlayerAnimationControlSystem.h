@@ -47,7 +47,7 @@ private:
      * @param entityId - 애니메이션을 제어할 엔티티의 ID.
      * @param newAnimation - 새로 설정할 애니메이션 데이터.
      */
-    void setCurrentAnimation(EntityManager& entityManager, EntityID entityId, std::shared_ptr<Animation> newAnimation);
+    void setCurrentAnimation(EntityManager& entityManager, EntityId entityId, std::shared_ptr<Animation> newAnimation);
 
     /*
      * @brief 현재 애니메이션이 점프 애니메이션인지 확인.
@@ -57,12 +57,12 @@ private:
     /*
      * @brief 걷기 애니메이션으로 전환함.
      */
-    void playWalkAnimation(EntityManager& entityManager, EntityID entityId, std::shared_ptr<Animation> walkAnimationData);
+    void playWalkAnimation(EntityManager& entityManager, EntityId entityId, std::shared_ptr<Animation> walkAnimationData);
 
     /*
      * @brief 점프 애니메이션으로 전환함.
      */
-    void playJumpAnimation(EntityManager& entityManager, EntityID entityId, std::shared_ptr<Animation> jumpAnimationData);
+    void playJumpAnimation(EntityManager& entityManager, EntityId entityId, std::shared_ptr<Animation> jumpAnimationData);
 };
 
 

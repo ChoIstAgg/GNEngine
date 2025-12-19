@@ -21,8 +21,7 @@
 
 /*
  * @class EntityManager
- * @brief ECS에서 엔티티와 컴포넌트의 관계를 관리하는 핵심 클래스임.
- *        엔티티 ID를 생성하고, 엔티티에 컴포넌트를 추가/제거/조회하는 기능을 제공함.
+ * @brief 엔티티 ID를 생성하고, 엔티티에 컴포넌트를 추가/제거/조회함.
 */ 
 class GNEngine_API EntityManager {
 public:
@@ -34,8 +33,8 @@ public:
     EntityManager(EntityManager&&) = delete;
     EntityManager& operator=(EntityManager&&) = delete;
 
-    EntityID createEntity();
-    void destroyEntity(EntityID entity);
+    EntityId createEntity();
+    void destroyEntity(EntityId entity);
 
     /* 
      * @brief 사용할 컴포넌트를 등록한다. 등록한 컴포넌트만 사용 가능. 
@@ -62,7 +61,7 @@ public:
      * @tparam Args 컴포넌트 생성자의 파라미터
     */
     template<typename T, typename... Args>
-    auto addComponent(EntityID entity, Args&&... args) -> std::conditional_t<std::is_same_v<T, TransformComponent> || std::is_same_v<T, RenderComponent> || std::is_same_v<T, AnimationComponent> || std::is_same_v<T, TextComponent> || std::is_same_v<T, CameraComponent> || std::is_same_v<T, VelocityComponent> || std::is_same_v<T, AccelerationComponent> || std::is_same_v<T, TextComponent>, void, T&>
+    auto addComponent(EntityId entity, Args&&... args) -> std::conditional_t<std::is_same_v<T, TransformComponent> || std::is_same_v<T, RenderComponent> || std::is_same_v<T, AnimationComponent> || std::is_same_v<T, TextComponent> || std::is_same_v<T, CameraComponent> || std::is_same_v<T, VelocityComponent> || std::is_same_v<T, AccelerationComponent> || std::is_same_v<T, TextComponent>, void, T&>
     {
         std::type_index type = typeid(T);
         if (componentTypes_.find(type) == componentTypes_.end()) {
@@ -89,7 +88,7 @@ public:
      * @return 컴포넌트가 존재하면 std::optional<T>로 감싸진 컴포넌트 값을, 없으면 std::nullopt를 반환함.
     */
     template<typename T>
-    std::optional<T> getComponent(EntityID entity) {
+    std::optional<T> getComponent(EntityId entity) {
         std::type_index type = typeid(T);
         if (componentTypes_.find(type) == componentTypes_.end()) {
             return std::nullopt;
@@ -103,7 +102,7 @@ public:
     }
 
     template<typename T>
-    bool hasComponent(EntityID entity) {
+    bool hasComponent(EntityId entity) {
         std::type_index type = typeid(T);
         if (componentTypes_.find(type) == componentTypes_.end()) {
             return false;
@@ -113,7 +112,7 @@ public:
     }
 
     template<typename T>
-    void removeComponent(EntityID entity) {
+    void removeComponent(EntityId entity) {
         std::type_index type = typeid(T);
         if (componentTypes_.find(type) == componentTypes_.end()) {
             return;
@@ -131,13 +130,13 @@ public:
      * @tparam Args 검색할 모든 컴포넌트들
     */
     template<typename... Args>
-    std::vector<EntityID> getEntitiesWith() {
+    std::vector<EntityId> getEntitiesWith() {
         Signature requiredSignature;
         (registerComponentType<Args>(), ...);
         ((requiredSignature.set(componentTypes_[typeid(Args)])), ...);
 
-        std::vector<EntityID> matchingEntities;
-        for (EntityID entity : activeEntities_) {
+        std::vector<EntityId> matchingEntities;
+        for (EntityId entity : activeEntities_) {
             if ((entitySignatures_[entity] & requiredSignature) == requiredSignature) {
                 matchingEntities.push_back(entity);
             }
@@ -145,7 +144,7 @@ public:
         return matchingEntities;
     }
 
-    std::vector<EntityID> getAllEntities() const;
+    std::vector<EntityId> getAllEntities() const;
 
     /*
      * @brief 시스템이 컴포넌트 배열에 직접 접근할 수 있도록 포인터를 반환함.
@@ -160,13 +159,13 @@ public:
     }
 
 private:
-    EntityID nextEntityId_ = 1;
-    std::vector<EntityID> activeEntities_;
-    std::queue<EntityID> availableEntityIds_;
+    EntityId nextEntityId_ = 1;
+    std::vector<EntityId> activeEntities_;
+    std::queue<EntityId> availableEntityIds_;
     std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> componentArrays_;
     std::unordered_map<std::type_index, size_t> componentTypes_;
     size_t nextComponentType_ = 0;
-    std::unordered_map<EntityID, Signature> entitySignatures_;
+    std::unordered_map<EntityId, Signature> entitySignatures_;
 };
 
 

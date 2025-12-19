@@ -56,8 +56,8 @@ I'm studying English. so i will quest in English.
   - `manager/`
   - `component/`
   - `system/`
-  - `resource/` : 엔진의 범용 에셋. 
-    - `image/`: 엔진 기본 내장이미지가 헤더파일로 존재함. TextManager::loadTextureEmbedded로 로딩하기. 
+  - `resource/` : 엔진의 기본 내장 범용 에셋. 디코드 된 형태로 헤더파일로 존재함.
+    - `image/`: TextManager::loadTextureEmbedded로 로딩하기. 
 - `out/build/`: 빌드 결과물이 저장되는 디렉터리
 - `example/`: 예제 프로젝트들. 
   - `T.C.S`
@@ -98,7 +98,7 @@ I'm studying English. so i will quest in English.
 
 
 ### 주석
-- 주석 표기는 대부분 /* */를 사용해줘.
+- 주석 표기는 대부분 /** */(D)를 사용해줘.
 - 주석은 되도록이면 .h 헤더 파일 말고도 .cpp 구현 파일에도 작성해줘.
 - 한글 주석을 사용할 때에는 "입니다." 대신 "." "~임.", "~함.", "~하기"를 사용해줘
 - 

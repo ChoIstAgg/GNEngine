@@ -1,84 +1,82 @@
 #pragma once
 #include "GNEngine/GNEngine_API.h"
-#include "GNEngine/manager/EntityManager.h"
-#include "GNEngine/core/EventInterface.h"
-#include <box2d/math_functions.h>
-#include <box2d/box2d.h> 
-#include <iostream>
+#include <box2d/box2d.h>
+
+class RigidBodyComponent;
+class TransformComponent;
 
 /*
  * @brief 물리 시뮬레이션 설정을 관리하며
  *        Box2D와 같은 물리 엔진의 전역 설정을 담당함.
- * @param gravity({0.0f-0.0f}) 물리 세계의 중력 벡터.
- * @param pixelsPerMeter(32.0f) 물리 세계의 1미터당 픽셀 수.
- * @param timeStep(1.0f / 60.0f) 물리 시뮬레이션의 고정 시간 간격.
  */
 class GNEngine_API PhysicsManager {
 public:
-    PhysicsManager(EntityManager& entityManager, b2Vec2 gravity = {0.0f, 0.0f}, float pixelsPerMeter = 32.0f, float timeStep = 1.0f / 60.0f);
+    PhysicsManager();
     ~PhysicsManager();
 
     /*
      * @brief 물리 세계를 초기화하고 생성함.
      */
-    void initPhysics();
+    void init();
 
     /*
      * @brief 물리 세계를 종료하고 파괴함.
      */
-    void shutdownPhysics();
+    void shutdown();
+
+    /*
+     * @brief 물리 시뮬레이션을 진행함.
+     * @param timeStep 시간 간격 (deltaTime)
+     * @param subStepCount 물리 연산 반복 횟수
+     */
+    void step(float timeStep, int subStepCount);
 
     /*
      * @brief 물리 세계의 중력 벡터를 설정함.
      * @param gravity 설정할 중력 벡터.
      */
-    void setGravity(b2Vec2 gravity) { gravity_ = gravity; }
-    /*
-     * @brief 물리 세계의 현재 중력 벡터를 반환함.
-     * @return 현재 중력 벡터.
-     */
-    b2Vec2 getGravity() const { return gravity_; }
+    void setGravity(b2Vec2 gravity);
 
-    /*
-     * @brief 물리 세계의 1미터당 픽셀 수를 설정함.
-     * @param value 설정할 픽셀/미터 값.
-     */
-    void setPixelsPerMeter(float value) { pixelsPerMeter_ = value; }
-    /*
-     * @brief 물리 세계의 현재 1미터당 픽셀 수를 반환함.
-     * @return 현재 픽셀/미터 값.
-     */
-    float getPixelsPerMeter() const { return pixelsPerMeter_; }
-
-    /*
-     * @brief 물리 시뮬레이션의 고정 시간 간격을 설정함.
-     * @param value 설정할 시간 간격.
-     */
-    void setTimeStep(float value) { timeStep_ = value; }
-    /*
-     * @brief 물리 시뮬레이션의 현재 고정 시간 간격을 반환함.
-     * @return 현재 시간 간격.
-     */
-    float getTimeStep() const { return timeStep_; }
-
-    /*
-     * @brief 현재 물리 월드의 ID를 반환함.
-     * @return 물리 월드의 b2WorldId.
-     */
     b2WorldId getWorldId() const { return worldId_; }
 
-    /* 
-     * @brief 
+    // --- Creation / Destruction Wrappers ---
+
+    b2BodyId createBody(const b2BodyDef& def);
+    void destroyBody(b2BodyId bodyId);
+
+    b2ShapeId createPolygonShape(b2BodyId bodyId, const b2ShapeDef& shapeDef, const b2Polygon& polygon);
+    b2ShapeId createCircleShape(b2BodyId bodyId, const b2ShapeDef& shapeDef, const b2Circle& circle);
+    b2ShapeId createCapsuleShape(b2BodyId bodyId, const b2ShapeDef& shapeDef, const b2Capsule& capsule);
+    b2ShapeId createSegmentShape(b2BodyId bodyId, const b2ShapeDef& shapeDef, const b2Segment& segment);
+
+    // --- State Sync ---
+    
+    /**
+     * @brief Box2D 바디의 상태를 RigidBodyComponent에 동기화함.
+     */
+    void updateRigidBodyComponent(RigidBodyComponent& rb);
+    /**
+     * @brief TransformComponent를 
     */
-    // void createBody(const ComponentAddedEvent& event);
-    // void destroyBoey(const ComponentRemovedEvent& event);
+    void updateTransformComponent(TransformComponent& tc);
+
+
+    // --- Conversion Helpers ---
+
+    float getPixelsPerMeter() const { return pixelsPerMeter_; }
+    void setPixelsPerMeter(float value) { pixelsPerMeter_ = value; }
+
+    // Meter -> Pixel
+    float toPixels(float meters) const { return meters * pixelsPerMeter_; }
+    b2Vec2 toPixels(const b2Vec2& meters) const { return {meters.x * pixelsPerMeter_, meters.y * pixelsPerMeter_}; }
+
+    // Pixel -> Meter
+    float toMeters(float pixels) const { return pixels / pixelsPerMeter_; }
+    b2Vec2 toMeters(const b2Vec2& pixels) const { return {pixels.x / pixelsPerMeter_, pixels.y / pixelsPerMeter_}; }
+
 
 private:
-    b2Vec2 gravity_ = {0.0f, 0.0f}; /* 물리 세계의 중력 벡터. */
-    float pixelsPerMeter_ = 32.0f; /* 물리 세계의 1미터당 픽셀 수. */
-    float timeStep_ = 1.0f / 60.0f; /* 고정 물리 시간 간격. */
-    b2WorldId worldId_ = b2_nullWorldId; // 물리 월드 ID
-    std::unordered_map<EntityID, b2BodyId> entityToBodyMap_; /* b2Body를 갖고있는 엔티티 맵*/
-
-    EntityManager& entityManager_;
+    b2WorldId worldId_ = b2_nullWorldId;
+    b2Vec2 gravity_ = {0.0f, 9.8f};
+    float pixelsPerMeter_ = 32.0f; 
 };

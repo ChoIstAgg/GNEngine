@@ -2,43 +2,50 @@
 
 GNEngine is a 2D game engine developed using Modern C++23 and SDL3.
 
+※This project is personal toy project. Not completed.※
+
 ## Features
 
-- **DOD, ECS system**
+- **ECS**: Effecient system.
+- **Hybrid DOD System**: Can use both AoS and SoA Data. (Required SoA specialization in ComponentArray.h. Customization support planned lator)
 - **Event-Driven System**: Flexibly handles various events
 - **2D Rendering**: Renders textures and animation to the screen.
-- **Sound**: Plays and manages WAV, MP3, and OGG format sounds.
-Can use stereo sound to 3D sound.
-- **Scene Management**: Easily switch and manage game scenes
-
+- **Sound**: Play and manage WAV, MP3, and OGG format sounds.
+Can use stereo sound to 3D sound with HRTF.
+- **Scene Management**: Easily switch and manage game scenes.
+- **Multi platform**: Not yet... Currently only supports Windows and Linux. Android will be supported later (maybe..)
 
 
 ## Build
 
-This project is built using CMake and `CMakePresets.json`. It requires GNU g++ (v15.1.0) and ninja (v1.13.0) or compatible compilers and build systems.
+This project is built using CMake and `CMakePresets.json`. I used GNU g++ (v15.1.0) and ninja (v1.13.0).
 
 1.  **Configure CMake:**
+- available Platform : windows, linux
+
     ```bash
-    cmake --preset custom-preset
+    cmake --preset "Platform"-preset
     ```
 
-2.  **Build:**
+1.  **Build:**
     ```bash
-    cmake --build out/build/custom-preset
+    cmake --build out/build/"Platform"-preset
     ```
 
 ## Example
+- Available example
+  - T.C.S
 
 ### Buile
 
 ```bash
-cmake --build out/build/custom-preset --target {A folder name of example}
+cmake --build out/build/"Platform"-preset --target "A folder name of example"
 ```
 
 ### Run
 
 ```bash
-out/build/custom-preset/Debug/{A folder name of example}.exe
+out/build/custom-preset/Debug/"A folder name of example".exe
 ```
 
 ## Directory Structure

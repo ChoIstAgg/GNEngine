@@ -4,7 +4,7 @@
 /*
  * @brief 엔티티가 파괴될 때 호출되어 공유 맵과 각 컴포넌트 배열의 데이터를 정리함.
 */
-GNEngine_API void SoAComponentArray::entityDestroyed(EntityID entity) {
+GNEngine_API void SoAComponentArray::entityDestroyed(EntityId entity) {
     if (!entityToIndexMap.count(entity)) {
         return; // 이 엔티티는 SoA 컴포넌트를 가지고 있지 않음
     }
@@ -23,7 +23,7 @@ GNEngine_API void SoAComponentArray::entityDestroyed(EntityID entity) {
         indexToEntityMap.erase(indexOfRemoved);
     } else {
         // 마지막 요소를 제거된 엔티티의 위치로 이동
-        EntityID lastEntity = indexToEntityMap.at(indexOfLast);
+        EntityId lastEntity = indexToEntityMap.at(indexOfLast);
         entityToIndexMap[lastEntity] = indexOfRemoved;
         indexToEntityMap[indexOfRemoved] = lastEntity;
 

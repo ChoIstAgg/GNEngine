@@ -3,6 +3,18 @@
 
 #include <AL/al.h>
 
+struct Position {
+    float x, y, z;
+};
+
+enum class SoundPriority {
+    LOW,
+    NORMAL,
+    HIGH,
+    CRITICAL
+};
+
+
 /*
  * 濡쒕뱶???ъ슫???곗씠???먯껜瑜??섑??대뒗 ?먯썝 ?대옒?ㅼ엫.
  * OpenAL 踰꾪띁 ID? ?ㅽ뀒?덉삤 ?щ? ?깆쓽 ?뺣낫瑜??닿퀬 ?덉쓬.

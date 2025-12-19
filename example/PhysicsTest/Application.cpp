@@ -59,15 +59,13 @@ int Application::init(){
     textManager_ = std::make_unique<TextManager>(renderer_);
     animationManager_ = std::make_unique<AnimationManager>(*textureManager_);
     fadeManager_ = std::make_unique<FadeManager>(*entityManager_);
-    physicsManager_ = std::make_unique<PhysicsManager>(b2Vec2(0.0f, 9.8f));
+    physicsManager_ = std::make_unique<PhysicsManager>();
     systemManager_ = std::make_unique<SystemManager>(*entityManager_);
     sceneManager_ = std::make_unique<SceneManager>();
     renderManager_ = std::make_unique<RenderManager>(renderer_, window_);
     
-    physicsManager_->initPhysics();
-    
-    SDL_Rect viewport = {0, 0, windowWidth_, windowHeight_};
-    renderManager_->setViewport(viewport);
+    physicsManager_->init(); 
+    physicsManager_->setGravity(b2Vec2(0.0f, 9.8f));
 
     /* --- Regist all systems --- */
     systemManager_->registerSystem<RenderSystem>(SystemPhase::RENDER, *renderManager_);
@@ -94,7 +92,7 @@ int Application::init(){
 void Application::quit() {
     std::cout << "Application - Cleaning up and quitting... " << std::endl;
 
-    physicsManager_->shutdownPhysics();
+    physicsManager_->shutdown();
 
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);

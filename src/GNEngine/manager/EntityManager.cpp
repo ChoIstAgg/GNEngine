@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <stdexcept>
 
-EntityID EntityManager::createEntity() {
-    EntityID newId;
+EntityId EntityManager::createEntity() {
+    EntityId newId;
     if (!availableEntityIds_.empty()) {
         newId = availableEntityIds_.front();
         availableEntityIds_.pop();
@@ -15,7 +15,7 @@ EntityID EntityManager::createEntity() {
     return newId;
 }
 
-void EntityManager::destroyEntity(EntityID entity) {
+void EntityManager::destroyEntity(EntityId entity) {
     // 모든 컴포넌트 배열에서 해당 엔티티의 컴포넌트 제거
     for (auto const& pair : componentArrays_) {
         pair.second->entityDestroyed(entity);
@@ -31,7 +31,7 @@ void EntityManager::destroyEntity(EntityID entity) {
     availableEntityIds_.push(entity);
 }
 
-std::vector<EntityID> EntityManager::getAllEntities() const {
+std::vector<EntityId> EntityManager::getAllEntities() const {
     return activeEntities_;
 }
 

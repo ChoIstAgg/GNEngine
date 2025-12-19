@@ -21,7 +21,7 @@ PlayerAnimationControlSystem::PlayerAnimationControlSystem(
 
 void PlayerAnimationControlSystem::update(EntityManager& entityManager, float deltaTime) {
     //SDL_Log("PlayerAnimationControlSystem: update called. DeltaTime: %.4f", deltaTime);
-    for (EntityID entity : entityManager.getEntitiesWith<PlayerAnimationControllerComponent, AnimationComponent, VelocityComponent, TransformComponent, AccelerationComponent>()) {
+    for (EntityId entity : entityManager.getEntitiesWith<PlayerAnimationControllerComponent, AnimationComponent, VelocityComponent, TransformComponent, AccelerationComponent>()) {
         auto animController_opt = entityManager.getComponent<PlayerAnimationControllerComponent>(entity);
         auto animation_opt = entityManager.getComponent<AnimationComponent>(entity);
         auto velocity_opt = entityManager.getComponent<VelocityComponent>(entity);
@@ -77,11 +77,11 @@ void PlayerAnimationControlSystem::update(EntityManager& entityManager, float de
     }
 }
 
-void PlayerAnimationControlSystem::playWalkAnimation(EntityManager& entityManager, EntityID entityId, std::shared_ptr<Animation> walkAnimationData) {
+void PlayerAnimationControlSystem::playWalkAnimation(EntityManager& entityManager, EntityId entityId, std::shared_ptr<Animation> walkAnimationData) {
     setCurrentAnimation(entityManager, entityId, walkAnimationData);
 }
 
-void PlayerAnimationControlSystem::playJumpAnimation(EntityManager& entityManager, EntityID entityId, std::shared_ptr<Animation> jumpAnimationData) {
+void PlayerAnimationControlSystem::playJumpAnimation(EntityManager& entityManager, EntityId entityId, std::shared_ptr<Animation> jumpAnimationData) {
     setCurrentAnimation(entityManager, entityId, jumpAnimationData);
 }
 
@@ -89,7 +89,7 @@ bool PlayerAnimationControlSystem::isJumpAnimationActive(AnimationComponent* ani
     return animation && animation->animation_ == jumpAnimationData;
 }
 
-void PlayerAnimationControlSystem::setCurrentAnimation(EntityManager& entityManager, EntityID entityId, std::shared_ptr<Animation> newAnimation) {
+void PlayerAnimationControlSystem::setCurrentAnimation(EntityManager& entityManager, EntityId entityId, std::shared_ptr<Animation> newAnimation) {
     if (!newAnimation) {
         std::cerr << "Error: Attempted to set a null animation for entity " << entityId << std::endl;
         return;

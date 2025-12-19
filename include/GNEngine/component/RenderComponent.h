@@ -8,7 +8,7 @@
 #include "GNEngine/component/TransformComponent.h"
 #include "GNEngine/component/AnimationComponent.h"
 
-/*
+/**
  * @class RenderComponent
  * @brief 게임 오브젝트를 렌더링하는 데 필요한 데이터를 담는 컴포넌트임.
  * @param texture 렌더링할 텍스처 포인터.

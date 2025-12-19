@@ -15,17 +15,6 @@
 
 #define AL_CHECK_ERROR() checkAlErrors(__FILE__, __LINE__)
 
-struct Position {
-    float x, y, z;
-};
-
-enum class SoundPriority {
-    LOW,
-    NORMAL,
-    HIGH,
-    CRITICAL
-};
-
 class GNEngine_API SoundManager {
 public:
     SoundManager();
@@ -36,7 +25,7 @@ public:
 
     std::shared_ptr<Sound> getSound(const std::filesystem::path& filePath);
 
-    ALuint playSound(EntityID entityId, Sound* sound,
+    ALuint playSound(EntityId entityId, Sound* sound,
                      Position position = {0.0f, 0.0f, 0.0f},
                      SoundPriority priority = SoundPriority::NORMAL,
                      float volume = 1.0f,
@@ -59,7 +48,7 @@ public:
 
     // --- SoundSystem이 SoA 데이터에 접근하기 위한 Getter 함수들 ---
     const std::vector<ALuint>& getSourceIds() const { return sourceIdsLeft_; }
-    const std::vector<EntityID>& getOwnerEntityIds() const { return ownerEntityIds_; }
+    const std::vector<EntityId>& getOwnerEntityIds() const { return ownerEntityIds_; }
     const std::vector<bool>& getArePlayingFlags() const { return arePlaying_; }
     size_t getVoiceCount() const { return sourceIdsLeft_.size(); }
     
@@ -80,7 +69,7 @@ private:
     std::vector<SoundPriority> priorities_;
     std::vector<bool> arePlaying_;
     std::vector<bool> areSplitStereo_;
-    std::vector<EntityID> ownerEntityIds_;
+    std::vector<EntityId> ownerEntityIds_;
 
     // 빠른 조회를 위한 소스 ID -> 인덱스 맵
     std::unordered_map<ALuint, size_t> sourceIdToIndexMap_;

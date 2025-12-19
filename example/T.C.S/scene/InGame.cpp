@@ -55,19 +55,19 @@ bool InGame::loadScene() {
     // std::cerr << "[DEBUG] InGame::loadScene - Camera is successfully loaded.\n";
     
     /* --- BGM --- */
-    // auto bgmEntity = entityManager_.createEntity();
-    // sceneEntityIDs_.push_back(bgmEntity);
-    // std::filesystem::path bgmPath = static_cast<std::filesystem::path>(SOUND_ASSET_ROOT_PATH) / "TestMp3.mp3";
-    // auto bgmSound = soundManager_.getSound(bgmPath);
-    // if (bgmSound) {
-    //     auto& soundComp = entityManager_.addComponent<SoundComponent>(bgmEntity);
-    //     entityManager_.addComponent<TransformComponent>(bgmEntity);
-    //     soundComp.addSound("bgm", bgmSound, true, 0.5f);
-    //     soundComp.play("bgm");
-    // } else {
-    //     std::cerr << "[ERROR] InGame - Can't load bgm. \n";
-    // }
-    // // std::cerr << "[DEBUG] InGame::loadScene - bgm is successfully loaded.\n";
+    auto bgmEntity = entityManager_.createEntity();
+    sceneEntityIDs_.push_back(bgmEntity);
+    std::filesystem::path bgmPath = static_cast<std::filesystem::path>(SOUND_ASSET_ROOT_PATH) / "TestMp3.mp3";
+    auto bgmSound = soundManager_.getSound(bgmPath);
+    if (bgmSound) {
+        auto& soundComp = entityManager_.addComponent<SoundComponent>(bgmEntity);
+        entityManager_.addComponent<TransformComponent>(bgmEntity);
+        soundComp.addSound("bgm", bgmSound, true, 0.5f);
+        soundComp.play("bgm");
+    } else {
+        std::cerr << "[ERROR] InGame - Can't load bgm. \n";
+    }
+    // std::cerr << "[DEBUG] InGame::loadScene - bgm is successfully loaded.\n";
     
     // Add components to the existing textEntity
     std::filesystem::path fontPath = static_cast<std::filesystem::path>(APP_ROOT_PATH) / "asset" / "font" / "CookieRun Regular.ttf";
@@ -75,7 +75,7 @@ bool InGame::loadScene() {
         std::cerr << "[ERROR] InGame - Failed to load font: " << fontPath << std::endl;
     }
     
-    EntityID textEntity = entityManager_.createEntity();
+    EntityId textEntity = entityManager_.createEntity();
     sceneEntityIDs_.push_back(textEntity);
     std::filesystem::path textPath = static_cast<std::filesystem::path>(TEXT_ASSET_ROOT_PATH) / "test.txt";
     std::string text = textManager_.loadTextFromFile(textPath);
@@ -90,7 +90,7 @@ bool InGame::loadScene() {
     // entityManager_.addComponent<TransformComponent>(imageErrorImageEntity);
     // entityManager_.addComponent<RenderComponent>(imageErrorImageEntity, RenderLayer::GAME_OBJECT);
 
-    EntityID exampleEntity = entityManager_.createEntity();
+    EntityId exampleEntity = entityManager_.createEntity();
     sceneEntityIDs_.push_back(exampleEntity);
     std::filesystem::path texturePath = static_cast<std::filesystem::path>(IMAGE_ASSET_ROOT_PATH) / "example_png.png";
     Texture* exampleTexture = textureManager_.getTexture(texturePath);

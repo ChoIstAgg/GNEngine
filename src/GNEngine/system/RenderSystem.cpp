@@ -18,7 +18,7 @@ RenderSystem::RenderSystem(RenderManager& renderManager)
 void RenderSystem::update(EntityManager& entityManager, float deltaTime) {
     // 이 함수 내에서만 사용할 로컬 구조체
     struct Renderable {
-        EntityID entity;
+        EntityId entity;
         RenderLayer layer;
     };
 
@@ -47,7 +47,7 @@ void RenderSystem::update(EntityManager& entityManager, float deltaTime) {
     auto fadeArray = entityManager.getComponentArray<FadeComponent>();
 
     for (const auto& renderable : renderables) {
-        EntityID entity = renderable.entity;
+        EntityId entity = renderable.entity;
 
         // TransformComponent
         if (!transformArray->hasComponent(entity)) continue;

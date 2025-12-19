@@ -15,9 +15,9 @@ struct GNEngine_API CameraComponent : public Component {
     float x;
     float y;
     float zoom;
-    EntityID targetEntityId; // 카메라가 따라갈 엔티티 ID
+    EntityId targetEntityId; // 카메라가 따라갈 엔티티 ID
 
-    CameraComponent(EntityID targetId = INVALID_ENTITY_ID, float zoom = 1.0f, float x = 0.0f, float y = 0.0f)
+    CameraComponent(EntityId targetId = INVALID_ENTITY_ID, float zoom = 1.0f, float x = 0.0f, float y = 0.0f)
         : targetEntityId(targetId), zoom(zoom), x(x), y(y) {}
 };
 

@@ -9,7 +9,6 @@
 
 #include "GNEngine/core/Component.h"
 #include "GNEngine/core/Sound.h"
-#include "GNEngine/manager/SoundManager.h" // only for SoundPriority enum
 
 // std::filesystem::path로 경로로 저장하지 않고 std::string으로 이름으로 Sound를 저장하는 이유
 // : 같은 경로의 같은 사운드라도 속성을 달리 할 수 있기 때문. 

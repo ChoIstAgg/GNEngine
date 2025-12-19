@@ -162,10 +162,10 @@ struct MouseButtonReleasedEvent : public MouseButtonEvent {
  * @field actionName 액션의 종류를 나타내는 문자열 (예: "move_forward", "jump", "fire").
  */
 struct ActionEvent : public Event {
-    EntityID targetEntityId;
+    EntityId targetEntityId;
     std::string actionName;
 
-    ActionEvent(EntityID entityId, const std::string& action)
+    ActionEvent(EntityId entityId, const std::string& action)
         : targetEntityId(entityId), actionName(action) {}
 };
 
@@ -175,10 +175,10 @@ struct ActionEvent : public Event {
  * @brief 엔티티에 컴포넌트가 추가될 때 발생하는 이벤트.
  */
 struct ComponentAddedEvent : public Event {
-    EntityID entityId;
+    EntityId entityId;
     const std::type_info& componentType;
 
-    ComponentAddedEvent(EntityID entity, const std::type_info& type)
+    ComponentAddedEvent(EntityId entity, const std::type_info& type)
         : entityId(entity), componentType(type) {}
 };
 
@@ -186,9 +186,9 @@ struct ComponentAddedEvent : public Event {
  * @brief 엔티티에서 컴포넌트가 제거될 때 발생하는 이벤트.
  */
 struct ComponentRemovedEvent : public Event {
-    EntityID entityId;
+    EntityId entityId;
     const std::type_info& componentType;
 
-    ComponentRemovedEvent(EntityID entity, const std::type_info& type)
+    ComponentRemovedEvent(EntityId entity, const std::type_info& type)
         : entityId(entity), componentType(type) {}
 };

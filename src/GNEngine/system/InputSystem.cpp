@@ -26,7 +26,7 @@ void InputSystem::onKeysHeld(const KeysHeldEvent& event, EntityManager& entityMa
     // SDL_Log("InputSystem: KeysHeldEvent received with %zu keys.", event.heldKeys.size());
 
     // InputControlComponent를 가진 모든 엔티티를 순회
-    for (EntityID entity : entityManager.getEntitiesWith<InputControlComponent>()) {
+    for (EntityId entity : entityManager.getEntitiesWith<InputControlComponent>()) {
         auto inputControl_opt = entityManager.getComponent<InputControlComponent>(entity);
         if (!inputControl_opt) continue;
         const auto& inputControl = inputControl_opt.value();
