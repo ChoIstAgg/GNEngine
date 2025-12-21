@@ -19,18 +19,18 @@ I'm studying English. so i will quest in English.
 1.  **CMake 설정 (Configure):**
     `CMakePresets.json`에 정의된 "Custom configure preset"을 사용합니다.
     ```bash
-    cmake --preset custom-preset
+    cmake --preset windows-preset
     ```
 
 2.  **빌드 (Build):**
     ```bash
-    cmake --build out/build/custom-preset
+    cmake --build out/build/windows-preset
     ```
 
 3.  **실행 (Run):**
-    빌드가 완료되면 실행 파일은 `out/build/custom-preset/Debug/` 디렉터리에 생성됩니다.
+    빌드가 완료되면 실행 파일은 `out/build/windows-preset/Debug/` 디렉터리에 생성됩니다.
     ```bash
-    out/build/custom-preset/Debug/{실행할항목}.exe
+    out/build/windows-preset/Debug/{실행할항목}.exe
     ```
 
 ## 3. 의존성 (Dependencies)
@@ -100,7 +100,7 @@ I'm studying English. so i will quest in English.
 ### 주석
 - 주석 표기는 대부분 /** */(D)를 사용해줘.
 - 주석은 되도록이면 .h 헤더 파일 말고도 .cpp 구현 파일에도 작성해줘.
-- 한글 주석을 사용할 때에는 "입니다." 대신 "." "~임.", "~함.", "~하기"를 사용해줘
+- 한글 주석을 사용할 때에는 "입니다."와 같은 경어체 대신 "." "~임.", "~함.", "~하기"와 같은 **개조식 문체**를 사용해줘
 - 
 - 모든 클래스의 주석에는 생성자의 파라미터를 같이 작성한다. 
   - 작성 양식은 "@param 변수이름(변수 기본값) 설명"
@@ -110,7 +110,7 @@ I'm studying English. so i will quest in English.
     - @class RenderComponent
     - @brief 주어진 텍스처를 렌더링하기 위한 데이터.
     - @param Texture 렌더링할 텍스처 데이터.
-    - @param srcRect({0-0-0-0}) 텍스처의그럼 흠 비 사각형 영역.
+    - @param srcRect({0-0-0-0}) 텍스처의 일부 사각형 영역.
     - @param flipX(false) x축으로 뒤집을지 여부.
 
 ## 7. 그 밖의 규칙

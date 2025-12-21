@@ -15,12 +15,19 @@
 #define DR_FLAC_IMPLEMENTATION
 #include "./dr_flac.h"
 
+// ogg decoding
 #include "./stb_vorbis.c"
 
+/**
+ * SoundManager 생성시 OpenAL 시작함. 
+ */
 SoundManager::SoundManager() {
     initAL();
 }
 
+/**
+ * SoundManager 파괴시 OpenAL 종료
+ */
 SoundManager::~SoundManager() {
     quitAL();
     std::cerr << "SoundManager " << this << " is successfully destroyed. \n";

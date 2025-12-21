@@ -38,7 +38,7 @@ struct RigidBodyComponent : public Component {
     bool isBullet = false;
     bool isAwake = true;
     bool isEnabled = true;
-    bool allowSleep = true;
+    bool isSleepingAllowed = true;
 
     // --- Shape/Fixture Properties (Simplified) ---
     // (추후 FixtureComponent로 분리될 수 있으나, 편의를 위해 여기에 유지)
