@@ -101,7 +101,7 @@ void PhysicsSystem::onComponentAdded(const ComponentAddedEvent& event) {
     bodyDef.linearVelocity = rb.linearVelocity;
     bodyDef.angularVelocity = rb.angularVelocity;
     bodyDef.gravityScale = rb.gravityScale;
-    bodyDef.enableSleep = rb.allowSleep;
+    bodyDef.enableSleep = rb.isSleepingAllowed;
     bodyDef.isAwake = rb.isAwake;
     bodyDef.isEnabled = rb.isEnabled;
 

@@ -151,14 +151,14 @@ void PhysicsManager::debugPrintPhysicsState() {
         return;
     }
 
-    std::cout << "--- Physics State (World ID: " << worldId_.index << ") ---" << std::endl;
+    std::cout << "--- Physics State (World ID: " << worldId_.index1 << ") ---" << std::endl;
     std::cout << "Gravity: (" << gravity_.x << ", " << gravity_.y << ") | "
               << "Pixels Per Meter: " << pixelsPerMeter_ << std::endl;
     std::cout << "Total tracked Body IDs: " << bodyIds_.size() << std::endl;
 
     for (b2BodyId bodyId : bodyIds_) {
         if (!b2Body_IsValid(bodyId)) {
-            std::cerr << "PhysicsManager: Warning - Encountered invalid body ID in tracked list: " << bodyId.index << std::endl;
+            std::cerr << "PhysicsManager: Warning - Encountered invalid body ID in tracked list: " << bodyId.index1 << std::endl;
             continue;
         }
 
@@ -172,10 +172,10 @@ void PhysicsManager::debugPrintPhysicsState() {
         b2Vec2 pixelPosition = toPixels(position);
         b2Vec2 pixelLinearVelocity = toPixels(linearVelocity);
 
-        std::cout << "  Body ID: " << bodyId.index
+        std::cout << "  Body ID: " << bodyId.index1
                   << " | Type: " << (bodyType == b2_staticBody ? "Static" : (bodyType == b2_kinematicBody ? "Kinematic" : "Dynamic"))
                   << " | Pos(px): (" << pixelPosition.x << ", " << pixelPosition.y << ")"
-                  << " | Angle(deg): " << angle * 180.0f / b2_pi // 라디안을 도로 변환
+                  << " | Angle(deg): " << angle * 180.0f / B2_PI // 라디안을 도로 변환
                   << " | LinVel(px/s): (" << pixelLinearVelocity.x << ", " << pixelLinearVelocity.y << ")"
                   << " | AngVel(rad/s): " << angularVelocity << std::endl;
     }
@@ -183,5 +183,5 @@ void PhysicsManager::debugPrintPhysicsState() {
 }
 
 void PhysicsManager::removeBodyId(b2BodyId id) {
-    std::erase_if(bodyIds_, [&](b2BodyId bodyId) { return b2BodyId_Equal(bodyId, id); });
+    std::erase_if(bodyIds_, [&](b2BodyId bodyId) { return bodyId.index1 == id.index1; });
 }
