@@ -159,35 +159,48 @@ void Application::quit() {
 */
 void Application::run() {
     isRunning_ = true;
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop_arg([](void* arg) {
+        static_cast<Application*>(arg)->loop();
+    }, this, 0, 1);
+#else
     while(isRunning_) {
-        // std::cerr << "[DEBUG] Application::run() - Entered run loop function.\n";
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime_).count();
-        lastFrameTime_ = currentTime;
-
-        // To prevent logic explosion by large deltaTime, clamp it.
-        deltaTime = std::min(deltaTime, 0.1f);
-
-        /* Process all events */
-        if(!inputManager_->processEvents()){
-            // std::cerr << "[DEBUG] Application::run() - processEvents() returned false. Exiting loop.\n";
-            isRunning_ = false;
-            break;
-        }
-        inputManager_->updateKeyStates();
-
-        renderManager_->clear();
-
-        /*
-        * SystemManager perform in the order. {PRE_UPDATE, LOGIT_UPDATE, PHYSICS_UPDATE, POST_UPDATE, RENDER}
-        */
-        // std::cerr << "[DEBUG] Application::run() - Calling systemManager_->updateAll().\n";
-        systemManager_->updateAll(deltaTime);
-        // std::cerr << "[DEBUG] Application::run() - Finished systemManager_->updateAll().\n";
-
-        // std::cerr << "[DEBUG] Application::run() - Calling sceneManager_->update()\n";
-        sceneManager_->update(deltaTime);
-
-        renderManager_->present();
+        loop();
     }
+#endif
+}
+
+void Application::loop() {
+    // std::cerr << "[DEBUG] Application::run() - Entered run loop function.\n";
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration<float>(currentTime - lastFrameTime_).count();
+    lastFrameTime_ = currentTime;
+
+    // To prevent logic explosion by large deltaTime, clamp it.
+    deltaTime = std::min(deltaTime, 0.1f);
+
+    /* Process all events */
+    if(!inputManager_->processEvents()){
+        // std::cerr << "[DEBUG] Application::run() - processEvents() returned false. Exiting loop.\n";
+        isRunning_ = false;
+#ifdef __EMSCRIPTEN__
+        emscripten_cancel_main_loop();
+#endif
+        return;
+    }
+    inputManager_->updateKeyStates();
+
+    renderManager_->clear();
+
+    /*
+    * SystemManager perform in the order. {PRE_UPDATE, LOGIT_UPDATE, PHYSICS_UPDATE, POST_UPDATE, RENDER}
+    */
+    // std::cerr << "[DEBUG] Application::run() - Calling systemManager_->updateAll().\n";
+    systemManager_->updateAll(deltaTime);
+    // std::cerr << "[DEBUG] Application::run() - Finished systemManager_->updateAll().\n";
+
+    // std::cerr << "[DEBUG] Application::run() - Calling sceneManager_->update()\n";
+    sceneManager_->update(deltaTime);
+
+    renderManager_->present();
 }

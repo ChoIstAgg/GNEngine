@@ -108,6 +108,6 @@ std::shared_ptr<Animation> AnimationManager::getAnimation(const std::string& ani
 
 void AnimationManager::setScaleModeOfAnimation(const std::string& animationName, SDL_ScaleMode scaleMode) {
     if(!SDL_SetTextureScaleMode(textureManager_.getTexture(getAnimation(animationName)->getTexturePath())->sdlTexture_, scaleMode)) {
-        SDL_Log("AnimationManager::setScaleModeOfAnimation - Failed to set texture scale mode. (%s) Reason : %s", animationName, SDL_GetError());
+        SDL_Log("AnimationManager::setScaleModeOfAnimation - Failed to set texture scale mode. (%s) Reason : %s", animationName.c_str(), SDL_GetError());
     }
 }

@@ -8,6 +8,10 @@
 #include <memory>
 #include <chrono>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 // Include all manager headers
 #include "GNEngine/manager/EntityManager.h"
 #include "GNEngine/manager/EventManager.h"
@@ -53,6 +57,7 @@ public:
     int init();
 
     void run();
+    void loop();
     void quit();
 
     SDL_Renderer* getRenderer() const { return renderer_; }

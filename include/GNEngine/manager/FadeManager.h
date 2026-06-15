@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../GNEngine_API.h"
 
-#include <SDL3/SDl.h>
+#include <SDL3/SDL.h>
 #include <functional>
 
 class EntityManager;

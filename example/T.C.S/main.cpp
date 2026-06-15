@@ -9,7 +9,7 @@ int SDLCALL appCallback(int argc, char* argv[]) {
     Application application;
 
     if(application.init() != 0){
-        SDL_Log("Application initialize. code:%d: %s", SDL_GetError());
+        SDL_Log("Application initialize failed: %s", SDL_GetError());
         return -1;
     }
     

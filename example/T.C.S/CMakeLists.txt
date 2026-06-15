@@ -29,5 +29,14 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AppRootPath.h.in ${CMAKE_BINARY_DIR}/
 # 애플리케이션 링크 라이브러리 설정
 target_link_libraries(T.C.S PRIVATE GNEngine)
 
+if(EMSCRIPTEN)
+    target_link_options(T.C.S PRIVATE
+        "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/asset@/asset"
+        "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/data@/data"
+        "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/config.bin@/config.bin"
+        "-sEXIT_RUNTIME=1"
+    )
+endif()
+
 # AppRootPath.h가 생성되는 디렉토리를 T.C.S의 include 경로에 추가
 target_include_directories(T.C.S PRIVATE ${CMAKE_BINARY_DIR}/generated)

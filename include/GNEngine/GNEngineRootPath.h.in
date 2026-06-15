@@ -1,7 +1,13 @@
     #pragma once
 
+    #ifdef __EMSCRIPTEN__
+    #ifndef PROJECT_ROOT_PATH
+    #define PROJECT_ROOT_PATH "/"
+    #endif
+    #else
     #ifndef PROJECT_ROOT_PATH
     #define PROJECT_ROOT_PATH "@CMAKE_SOURCE_DIR@/"
+    #endif
     #endif
 
     

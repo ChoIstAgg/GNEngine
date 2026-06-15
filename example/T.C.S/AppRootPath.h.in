@@ -1,5 +1,42 @@
 #pragma once
 
+#ifdef __EMSCRIPTEN__
+#ifndef APP_ROOT_PATH
+#define APP_ROOT_PATH "/"
+#endif
+
+#ifndef APP_DATA_PATH
+#define APP_DATA_PATH "/data/" 
+#endif
+
+#ifndef ASSET_ROOT_PATH
+#define ASSET_ROOT_PATH "/asset/"
+#endif
+
+#ifndef TEXT_ASSET_ROOT_PATH
+#define TEXT_ASSET_ROOT_PATH "/asset/text/"
+#endif
+
+#ifndef FONT_ASSET_ROOT_PATH
+#define FONT_ASSET_ROOT_PATH "/asset/font/"
+#endif
+
+#ifndef IMAGE_ASSET_ROOT_PATH
+#define IMAGE_ASSET_ROOT_PATH "/asset/image/"
+#endif
+
+#ifndef SOUND_ASSET_ROOT_PATH
+#define SOUND_ASSET_ROOT_PATH "/asset/sound/"
+#endif
+
+#ifndef SOUND_EFFECT_ASSET_ROOT_PATH
+#define SOUND_EFFECT_ASSET_ROOT_PATH "/asset/sound/effect/"
+#endif
+
+#ifndef ANIMATION_SHEET_ASSET_ROOT_PATH
+#define ANIMATION_SHEET_ASSET_ROOT_PATH "/asset/animation/spritesheet/"
+#endif
+#else
 #ifndef APP_ROOT_PATH
 #define APP_ROOT_PATH "@CMAKE_CURRENT_SOURCE_DIR@/"
 #endif
@@ -13,11 +50,11 @@
 #endif
 
 #ifndef TEXT_ASSET_ROOT_PATH
-#define TEXT_ASSET_ROOT_PATH "@CMAKE_CURRENT_SOURCE_DIR@/asset/text/"
+#define TEXT_ASSET_ROOT_PATH "/asset/text/"
 #endif
 
 #ifndef FONT_ASSET_ROOT_PATH
-#define FONT_ASSET_ROOT_PATH "@CMAKE_CURRENT_SOURCE_DIR@/asset/font/"
+#define FONT_ASSET_ROOT_PATH "/asset/font/"
 #endif
 
 #ifndef IMAGE_ASSET_ROOT_PATH
@@ -34,4 +71,5 @@
 
 #ifndef ANIMATION_SHEET_ASSET_ROOT_PATH
 #define ANIMATION_SHEET_ASSET_ROOT_PATH "@CMAKE_CURRENT_SOURCE_DIR@/asset/animation/spritesheet/"
+#endif
 #endif
