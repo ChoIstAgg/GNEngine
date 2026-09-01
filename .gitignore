@@ -1,6 +1,6 @@
 # external libraries on include.
 include/*
-!include/GNEngine
+!include/GNEngine/
 !include/CMakeLists.txt
 
 
